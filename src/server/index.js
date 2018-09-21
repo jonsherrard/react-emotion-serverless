@@ -2,11 +2,6 @@ import 'make-promises-safe'
 import Hapi from 'hapi'
 
 import DynamicRouteHandler from './handlers/dynamic'
-import ProxyHandler from './handlers/proxy'
-import PurgeHandler from './handlers/purge'
-import RedirectHandler from './handlers/redirect'
-import StaticHandler from './handlers/static'
-import ApiHandler from './handlers/api'
 
 import CacheManager from './utilities/cache-manager'
 
@@ -45,8 +40,6 @@ class Server {
       return h.continue
     })
     // Handle server routes
-    PurgeHandler({ server })
-    RedirectHandler({ config, server })
     DynamicRouteHandler({ config, server })
     // return server instance (not class)
     return server
@@ -65,9 +58,6 @@ export const registerPlugins = async ({ server, config }) => {
   }
   // Register all required plugins before use
   await server.register(plugins)
-  StaticHandler({ server })
-  ProxyHandler({ server, config })
-  ApiHandler({ config, server })
 }
 
 export default Server

@@ -179,12 +179,4 @@ describe('Document contents', () => {
       done()
     })
   })
-
-  it('Handles static files', done => {
-    request.get(`${uri}/public/test.txt`, (err, res, body) => {
-      expect(res.statusCode).to.equal(200)
-      expect(body).to.contain('Hello World')
-      done()
-    })
-  })
 })
