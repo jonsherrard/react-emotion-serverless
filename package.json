@@ -50,6 +50,7 @@
     "emotion": "^9.0.2",
     "emotion-server": "^9.0.2",
     "error-overlay-webpack-plugin": "^0.1.4",
+    "fastify": "^1.11.2",
     "file-loader": "^1.1.11",
     "friendly-errors-webpack-plugin": "^1.7.0",
     "fs-extra": "^5.0.0",
