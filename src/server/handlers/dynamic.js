@@ -12,7 +12,6 @@ import renderTreeToHTML from '../render/tree-to-html'
 
 import baseUrlResolver from '../utilities/base-url-resolver'
 import normaliseUrlPath from '../utilities/normalise-url-path'
-import CacheManager from '../utilities/cache-manager'
 import { log } from '../utilities/logger'
 
 const renderErrorTree = async ({
@@ -20,7 +19,7 @@ const renderErrorTree = async ({
   route,
   match,
   componentData,
-  h
+  reply
 }) => {
   log.silly('Rendering Error HTML')
   const responseString = await renderTreeToHTML({
@@ -30,17 +29,20 @@ const renderErrorTree = async ({
     componentData
   })
   log.silly('Error Data: ', componentData)
-  return h
-    .response(responseString)
+  reply
     .type('text/html')
     .code(componentData.code || 404)
+    .send(responseString)
 }
 
-const renderSuccessTree = async (
-  { route, match, componentData, isPreview, h, queryParams },
-  cache,
-  cacheKey
-) => {
+const renderSuccessTree = async ({
+  route,
+  match,
+  componentData,
+  isPreview,
+  reply,
+  queryParams
+}) => {
   log.silly('Rendering Success HTML', { match })
 
   const responseString = await renderTreeToHTML({
@@ -50,25 +52,13 @@ const renderSuccessTree = async (
     componentData,
     queryParams
   })
-  const response = h
-    .response(responseString)
+  reply
     .type('text/html')
     .code(200)
-  // only set cache if _not_ a preview
-  if (!isPreview) {
-    log.debug(`Setting html in cache: ${chalk.green(cacheKey)}`)
-    cache.set(cacheKey, responseString)
-  }
-  // send back no-cache header if preview
-  if (isPreview) {
-    response.header('cache-control', 'no-cache')
-  }
-  return response
+    .send(responseString)
 }
 
 export default ({ server, config }) => {
-  const cacheManager = new CacheManager()
-  const cache = cacheManager.createCache('html')
   const routes = prepareAppRoutes(config)
   server.route({
     options: {
@@ -79,22 +69,11 @@ export default ({ server, config }) => {
       }
     },
     method: 'GET',
-    path: '/{path*}',
-    handler: async (request, h) => {
-      // Set a cache key
-      const currentPath = request.url.pathname || '/'
+    path: '/*',
+    handler: async (request, reply) => {
+      const currentPath = request.params['*'] || ''
       const isPreview = Boolean(request.query && request.query.tapestry_hash)
-      const cacheKey = normaliseUrlPath(currentPath)
-      // Is there cached HTML?
-      const cachedHTML = await cache.get(cacheKey)
-      // If there's a cache response, return the response straight away
-      if (cachedHTML) {
-        log.debug(`Rendering HTML from cache: ${chalk.green(cacheKey)}`)
-        return h
-          .response(cachedHTML)
-          .type('text/html')
-          .code(200)
-      }
+      const normalisedPath = `/${normaliseUrlPath(currentPath)}`
 
       const queryParams = request.query
 
@@ -103,7 +82,7 @@ export default ({ server, config }) => {
       // Match Routes
       // this should only have one route as we force "exact" on each route
       // How would we error out if two routes match here? "Ambigous routes detected?" maybe earlier in app
-      const { route, match } = matchRoutes(routes, request.url.pathname)
+      const { route, match } = matchRoutes(routes, normalisedPath)
 
       log.debug(`Matched route ${chalk.green(route.path)}`)
       // This needs tidying
@@ -143,7 +122,7 @@ export default ({ server, config }) => {
           route,
           match,
           componentData,
-          h
+          reply
         })
       }
 
@@ -171,22 +150,18 @@ export default ({ server, config }) => {
           route,
           match,
           componentData,
-          h
+          reply
         })
       }
 
-      return renderSuccessTree(
-        {
-          route,
-          match,
-          componentData,
-          isPreview,
-          h,
-          queryParams
-        },
-        cache,
-        cacheKey
-      )
+      return renderSuccessTree({
+        route,
+        match,
+        componentData,
+        isPreview,
+        reply,
+        queryParams
+      })
     }
   })
 }

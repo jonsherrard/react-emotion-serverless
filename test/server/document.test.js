@@ -99,9 +99,7 @@ describe('Document contents', () => {
     // boot tapestry server
 
     server = new Server({ config })
-    await registerPlugins({ config, server })
-    await server.start()
-    uri = server.info.uri
+    uri = await server.start()
   })
 
   afterEach(async () => {

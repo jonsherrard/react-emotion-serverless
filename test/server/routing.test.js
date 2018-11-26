@@ -37,8 +37,7 @@ describe('Handling custom static routes', () => {
   before(async () => {
     // boot server server
     server = new Server({ config: config })
-    await server.start()
-    uri = server.info.uri
+    uri = await server.start()
   })
 
   after(async () => await server.stop())
@@ -94,8 +93,7 @@ describe('Handling custom endpoint routes', () => {
       .reply(200, dataPage)
     // boot server server
     server = new Server({ config: config })
-    await server.start()
-    uri = server.info.uri
+    uri = await server.start()
   })
 
   after(async () => await server.stop())
@@ -180,8 +178,7 @@ describe('Handling custom endpoint routes', () => {
       .reply(200, dataPage)
     // boot tapestry server
     server = new Server({ config })
-    await server.start()
-    uri = server.info.uri
+    uri = await server.start()
   })
 
   after(async () => server.stop())

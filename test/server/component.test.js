@@ -35,9 +35,8 @@ describe('Custom components rendering', () => {
       .reply(200, dataPosts.data)
       .get('/wp-json/wp/v2/posts?slug=slug&_embed')
       .reply(200, dataPage)
-    server = new Server({config: config})
-    await server.start()
-    uri = server.info.uri
+    server = new Server({ config: config })
+    uri = await server.start()
   })
 
   after(async () => await server.stop())
@@ -84,9 +83,8 @@ describe('Default view rendering', () => {
       .get('/wp-json/wp/v2/posts?slug=slug&_embed')
       .reply(200, dataPost)
     // boot  server
-    server = new Server({config :config})
-    await server.start()
-    uri = server.info.uri
+    server = new Server({ config: config })
+    uri = await server.start()
   })
 
   after(async () => await server.stop())

@@ -71,8 +71,7 @@ describe('Handling server responses', () => {
     // boot tapestry server
     process.env.CACHE_CONTROL_MAX_AGE = 60
     server = new Server({ config })
-    await server.start()
-    uri = server.info.uri
+    uri = await server.start()
   })
 
   after(async () => {
@@ -89,10 +88,7 @@ describe('Handling server responses', () => {
 
   it('Route matched, has correct headers', done => {
     request.get(uri, (err, res) => {
-      expect(res.headers['content-type']).to.equal('text/html; charset=utf-8')
-      expect(res.headers['cache-control']).to.equal(
-        'max-age=60, must-revalidate, public'
-      )
+      expect(res.headers['content-type']).to.equal('text/html')
       done()
     })
   })

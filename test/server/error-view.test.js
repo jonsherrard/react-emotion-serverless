@@ -35,17 +35,17 @@ describe('Error view rendering', () => {
   afterEach(async () => await server.stop())
 
   it('Show MissingView in DEV if component missing', async () => {
-    server = new Server({config})
-    await server.start()
-    let res = await r.get(server.info.uri)
+    server = new Server({ config })
+    const uri = await server.start()
+    let res = await r.get(uri)
     let body = await res.text()
     expect(body).to.contain('Missing component')
   })
 
   it('Show DefaultError in PROD if component missing', async () => {
-    server = new Server({config})
-    await server.start()
-    let res = await r.get(server.info.uri)
+    server = new Server({ config })
+    const uri = await server.start()
+    let res = await r.get(uri)
     let body = await res.text()
     expect(body).to.contain('Application Error')
   })
@@ -57,8 +57,8 @@ describe('Error view rendering', () => {
         components: { Page: () => <p>Hello</p> }
       }
     })
-    await server.start()
-    let res = await r.get(`${server.info.uri}/404-route`)
+    const uri = await server.start()
+    let res = await r.get(`${uri}/404-route`)
     let body = await res.text()
     expect(body).to.contain(404)
     expect(body).to.contain(HTTPStatus[404])
@@ -71,8 +71,8 @@ describe('Error view rendering', () => {
         components: { Page: () => <p>Hello</p> }
       }
     })
-    await server.start()
-    let res = await r.get(`${server.info.uri}/route/not/matched/in/any/way`)
+    const uri = await server.start()
+    let res = await r.get(`${uri}/route/not/matched/in/any/way`)
     let body = await res.text()
     expect(body).to.contain(404)
     expect(body).to.contain(HTTPStatus[404])
@@ -88,8 +88,8 @@ describe('Error view rendering', () => {
         }
       }
     })
-    await server.start()
-    let res = await r.get(`${server.info.uri}/404-route`)
+    const uri = await server.start()
+    let res = await r.get(`${uri}/404-route`)
     let body = await res.text()
     expect(body).to.contain('Custom Error')
   })
@@ -108,12 +108,11 @@ describe('Error view rendering', () => {
         }
       }
     })
-    await server.start()
-    let res = await r.get(`${server.info.uri}/404-route`)
+    const uri = await server.start()
+    let res = await r.get(`${uri}/404-route`)
     let body = await res.text()
     expect(body).to.contain('Custom Error')
     expect(body).to.contain('404')
     expect(body).to.contain('Not Found')
   })
 })
-
