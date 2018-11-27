@@ -1,10 +1,10 @@
 {
-  "name": "tapestry-lite",
+  "name": "react-emotion-serverless",
   "version": "1.5.3",
-  "description": "Universal React & Wordpress Renderer",
+  "description": "React and Emotion renderer tuned for serverless environments",
   "main": "./src/server/index.js",
   "bin": {
-    "tapestry": "./bin/index.js"
+    "react-emotion-serverless-": "./bin/index.js"
   },
   "files": [
     "src/",

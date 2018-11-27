@@ -1,3 +1,4 @@
+const ASSET_PREFIX = process.env.ASSET_PREFIX || '/_assets/'
 const fs = require('fs-extra')
 const path = require('path')
 const webpack = require('webpack')
@@ -46,8 +47,7 @@ module.exports = (target = 'node') => {
             presets: [require('babel-preset-razzle')],
             plugins: [
               require.resolve('loadable-components/babel'),
-              process.env.CSS_PLUGIN === 'emotion' &&
-                require.resolve('babel-plugin-emotion'),
+              require.resolve('babel-plugin-emotion'),
               WEB_DEV && require.resolve('react-hot-loader/babel')
             ].filter(Boolean)
           }
@@ -81,10 +81,11 @@ module.exports = (target = 'node') => {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
         new FriendlyErrorsPlugin({
-          clearConsole: process.env.NODE_ENV !== 'test'
+          clearConsole: false
         })
       ],
       externals: [
+        'long',
         nodeExternals({
           modulesDirs: [paths.appNodeModules],
           whitelist: ['webpack/hot/poll?1000']
@@ -97,6 +98,7 @@ module.exports = (target = 'node') => {
     Object.assign(config, {
       entry: [paths.ownProdServer],
       output: {
+        publicPath: ASSET_PREFIX,
         path: paths.appBuild,
         filename: 'server.production.js',
         libraryTarget: 'commonjs2'
@@ -139,11 +141,11 @@ module.exports = (target = 'node') => {
         },
         host: 'localhost',
         hot: true,
-        noInfo: true,
-        overlay: false,
+        noInfo: false,
+        overlay: true,
         stats: 'none',
         port: 8080,
-        quiet: true,
+        quiet: false,
         // By default files from `contentBase` will not trigger a page reload.
         // Reportedly, this avoids CPU overload on some systems.
         // https://github.com/facebookincubator/create-react-app/issues/293
@@ -163,7 +165,7 @@ module.exports = (target = 'node') => {
         path: paths.appBuildPublic,
         sourceMapFilename: '[name].[chunkhash].map',
         filename: '[name].[chunkhash].js',
-        publicPath: '/_assets/'
+        publicPath: ASSET_PREFIX
       },
       plugins: [
         new StatsPlugin('../stats.json'),
@@ -192,7 +194,11 @@ module.exports = (target = 'node') => {
 
   // use custom webpack config
   if (fs.existsSync(paths.appWebpackConfig)) {
-    config = require(paths.appWebpackConfig)(config, {}, webpack)
+    let customConfig = require(paths.appWebpackConfig)
+    config =
+      typeof customConfig === 'function'
+        ? customConfig(config, {}, webpack)
+        : customConfig.default(config, {}, webpack)
   }
 
   return config

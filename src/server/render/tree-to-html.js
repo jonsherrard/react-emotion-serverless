@@ -24,11 +24,7 @@ export default async ({
   // { html, css, ids }
   let styleData = {}
   // extract html, css and ids from either Glamor or Emotion
-  if (process.env.CSS_PLUGIN === 'emotion') {
-    styleData = require('emotion-server').extractCritical(htmlString)
-  } else {
-    styleData = require('glamor/server').renderStaticOptimized(() => htmlString)
-  }
+  styleData = require('emotion-server').extractCritical(htmlString)
   const helmet = Helmet.renderStatic()
   // Assets to come, everything else works
   const renderData = {

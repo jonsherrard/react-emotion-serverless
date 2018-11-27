@@ -24,11 +24,17 @@ const getJavascriptBundles = () => {
     return <script src={'http://localhost:4001/static/js/bundle.js'} />
   }
   if (process.env.NODE_ENV === 'production') {
+    let assetPrefix = ''
+    if (process.env.ASSET_PREFIX) {
+      assetPrefix = process.env.ASSET_PREFIX
+    }
     const assetsPath = path.resolve(process.cwd(), '.tapestry', 'assets.json')
     const assets = fs.readJsonSync(assetsPath)
     return Object.keys(assets)
       .filter(Boolean)
-      .map((key, index) => <script key={index} src={assets[key].js} />)
+      .map((key, index) => (
+        <script key={index} src={assetPrefix + assets[key].js} />
+      ))
   }
 }
 
