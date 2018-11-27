@@ -6,18 +6,17 @@
   "bin": {
     "react-emotion-serverless-": "./bin/index.js"
   },
-  "files": [
-    "src/",
-    "bin/"
-  ],
+  "files": ["src/", "bin/"],
   "repository": "shortlist-digital/tapestry-lite",
   "scripts": {
     "precommit": "lint-staged",
     "prepublishOnly": "npm run lint && npm run test",
     "lint": "eslint . --fix --cache",
     "test": "HOST=localhost npm run test:server && npm run test:integration",
-    "test:server": "NODE_ENV=test LOG_LEVEL=silent mocha ./src/**/*.test.js ./test/server/*.test.js --require test/babel-register",
-    "test:integration": "PORT=4321 NODE_ENV=test LOG_LEVEL=silent mocha ./test/integration/*.test.js --require test/babel-register"
+    "test:server":
+      "NODE_ENV=test LOG_LEVEL=silent mocha ./src/**/*.test.js ./test/server/*.test.js --require test/babel-register",
+    "test:integration":
+      "PORT=4321 NODE_ENV=test LOG_LEVEL=silent mocha ./test/integration/*.test.js --require test/babel-register"
   },
   "license": "ISC",
   "devDependencies": {
@@ -43,8 +42,6 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-razzle": "^2.0.0-alpha.2",
     "boom": "^7.2.0",
-    "cache-manager": "^2.9.0",
-    "cache-manager-redis-store": "^1.4.0",
     "clean-webpack-plugin": "^0.1.19",
     "dotenv": "^5.0.1",
     "emotion": "^9.0.2",

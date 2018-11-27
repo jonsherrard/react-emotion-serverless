@@ -1,10 +1,6 @@
 import 'make-promises-safe'
 
 import DynamicRouteHandler from './handlers/dynamic'
-import CacheManager from './utilities/cache-manager'
-
-// Create CacheManager Singleton
-new CacheManager()
 
 class Server {
   constructor({ config }) {
